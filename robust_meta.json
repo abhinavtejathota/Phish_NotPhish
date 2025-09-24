@@ -1,0 +1,30 @@
+{
+  "features": [
+    "nb_hyperlinks",
+    "nb_www",
+    "ratio_extHyperlinks",
+    "longest_word_path",
+    "ratio_intHyperlinks",
+    "ratio_extRedirection",
+    "length_url",
+    "ratio_digits_url",
+    "length_words_raw",
+    "char_repeat",
+    "length_hostname",
+    "avg_word_path"
+  ],
+  "medians": {
+    "nb_hyperlinks": 34.0,
+    "nb_www": 0.0,
+    "ratio_extHyperlinks": 0.131147541,
+    "longest_word_path": 7.0,
+    "ratio_intHyperlinks": 0.7434423815000001,
+    "ratio_extRedirection": 0.0,
+    "length_url": 47.0,
+    "ratio_digits_url": 0.0,
+    "length_words_raw": 5.0,
+    "char_repeat": 3.0,
+    "length_hostname": 19.0,
+    "avg_word_path": 4.857142857
+  }
+}
