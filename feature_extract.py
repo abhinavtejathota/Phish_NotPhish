@@ -1,4 +1,3 @@
-# feature_extraction.py
 import re
 import json
 from urllib.parse import urlparse
@@ -23,11 +22,7 @@ def _has_port(netloc):
     return 0
 
 def compute_url_superset_features(url: str):
-    """
-    Compute a superset of URL-derived features. Not all of these may be used
-    by the model; the app will select the subset matching model metadata.
-    Returns a dict
-    """
+    
     if not isinstance(url, str):
         url = str(url or "")
 
@@ -38,7 +33,6 @@ def compute_url_superset_features(url: str):
     whole = url
 
     features = {}
-    # basic counts
     features["length_url"] = _safe_len(whole)
     features["length_hostname"] = _safe_len(host)
     features["nb_dots"] = whole.count(".")
@@ -101,20 +95,9 @@ def compute_url_superset_features(url: str):
     features["brand_in_subdomain"] = 0
     features["brand_in_path"] = 0
 
-    # fallback numeric defaults for features that are not derivable from URL alone:
-    # these will be filled by medians later if model expects them but we can't compute them.
-    # (we leave them out here; app will fill from medians)
     return features
 
 def extract_features_for_model(url, meta_path="robust_meta.json"):
-    """
-    Build a pandas.DataFrame with columns matching the trained model.
-    - Loads meta_path (JSON) which must contain keys:
-         { "features": [list-of-feature-names], "medians": {feat:median, ...} }
-    - Computes a superset of URL-derived features, then assembles row by model features,
-      filling missing entries using medians from meta.
-    """
-    # load meta
     try:
         with open(meta_path, "r") as f:
             meta = json.load(f)
@@ -124,13 +107,11 @@ def extract_features_for_model(url, meta_path="robust_meta.json"):
         raise FileNotFoundError(f"Meta file '{meta_path}' not found or bad format. Run training block first.")
 
     sup = compute_url_superset_features(url)
-    # assemble dict for model features
     row = {}
     for feat in model_features:
         if feat in sup:
             row[feat] = sup[feat]
         else:
-            # if not computable from URL, fallback to median from meta or 0
             row[feat] = medians.get(feat, 0.0)
-    # return single-row DataFrame
+    
     return pd.DataFrame([row], columns=model_features)
