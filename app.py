@@ -10,13 +10,11 @@ META_PATH = "robust_meta.json"
 
 app = Flask(__name__)
 
-# load model and meta
 model = joblib.load(MODEL_PATH)
 with open(META_PATH, "r") as f:
     meta = json.load(f)
 MODEL_FEATURES = meta["features"]
 
-# Simple HTML form (optional)
 INDEX_HTML = """
 <!doctype html>
 <title>Phishing check (URL only)</title>
@@ -35,7 +33,6 @@ def index():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Accept either JSON { "url": "..." } or form field 'url'
         if request.is_json:
             data = request.get_json()
             url = data.get("url", "").strip()
@@ -45,7 +42,7 @@ def predict():
         if not url:
             return jsonify({"error": "no url provided"}), 400
 
-        X = extract_features_for_model(url, meta_path=META_PATH)  # returns DataFrame of exact model features
+        X = extract_features_for_model(url, meta_path=META_PATH) 
         pred = int(model.predict(X)[0])
         proba = model.predict_proba(X)[0].tolist() if hasattr(model, "predict_proba") else None
         meaning = "phishing" if pred==1 else "legitimate"
@@ -53,7 +50,6 @@ def predict():
         resp = {"url": url, "prediction": pred, "meaning": meaning}
         if proba is not None:
             resp["probabilities"] = proba
-        # if form was used, render HTML
         if not request.is_json:
             return render_template_string(INDEX_HTML, result=json.dumps(resp, indent=2))
         return jsonify(resp)
